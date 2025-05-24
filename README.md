@@ -67,7 +67,7 @@
 
 1. **克隆项目**
    ```bash
-   git clone https://github.com/codech/hacker-news-crawler.git
+   git clone <your-repository-url>
    cd hacker-news-crawler
    ```
 
@@ -385,18 +385,25 @@ lsof -i :8080
 ### 项目结构
 
 ```
-├── hn_news_crawler.py    # 主爬虫程序
-├── run_daemon.py         # 守护进程启动器
-├── run_once.py          # 单次运行脚本
-├── manage_crawler.py    # 进程管理工具
-├── config.env.example   # 配置文件模板
-├── requirements.txt     # Python 依赖
-├── README.md           # 项目文档
-├── .gitignore          # Git 忽略文件
-├── data/               # 数据存储目录
-│   └── hn_news_*.csv   # 每日新闻数据
-└── logs/               # 日志目录
-    └── hn_crawler.log  # 运行日志
+├── README.md               # 项目主文档
+├── LICENSE                 # MIT许可证
+├── hn_news_crawler.py      # 主爬虫程序
+├── run_daemon.py           # 守护进程启动器
+├── run_once.py            # 单次运行脚本
+├── manage_crawler.py      # 进程管理工具
+├── config.env.example     # 配置文件模板
+├── requirements.txt       # Python 依赖
+├── docs/                  # 详细文档
+│   ├── INDEX.md           # 文档导航
+│   ├── API.md             # API文档
+│   ├── PROJECT_SUMMARY.md # 项目总结
+│   ├── TROUBLESHOOTING.md # 故障排除
+│   └── HTTPX_COMPATIBILITY_FIX.md # 兼容性修复
+├── .gitignore            # Git 忽略文件
+├── data/                 # 数据存储目录
+│   └── hn_news_*.csv     # 每日新闻数据
+└── logs/                 # 日志目录
+    └── hn_crawler.log    # 运行日志
 ```
 
 ### 代码规范
@@ -424,7 +431,23 @@ def custom_format_message(self, news):
     pass
 ```
 
+## 📚 详细文档
+
+更多详细文档请查看 `docs` 目录：
+
+- **[📋 文档导航](docs/INDEX.md)** - 所有文档的索引
+- **[📚 API文档](docs/API.md)** - 详细的API接口说明
+- **[📊 项目总结](docs/PROJECT_SUMMARY.md)** - 项目概述和技术架构
+- **[🔧 故障排除](docs/TROUBLESHOOTING.md)** - 详细的问题解决指南
+- **[🔧 兼容性修复](docs/HTTPX_COMPATIBILITY_FIX.md)** - httpx兼容性问题解决方案
+
 ## 📝 更新日志
+
+### v2.1.0 (2025-05-24)
+- 🔧 修复 httpx 兼容性问题
+- 📚 重新整理文档结构，遵循国际惯例
+- 🔒 清理敏感信息
+- ✨ 优化配置管理系统
 
 ### v2.0.0 (2025-05-24)
 - ✨ 重构核心爬虫引擎
@@ -450,8 +473,9 @@ def custom_format_message(self, news):
 ## 📞 支持
 
 如有问题，请通过以下方式联系：
-- 🐛 Issues: [GitHub Issues](https://github.com/codech/hacker-news-crawler/issues)
+- 🐛 Issues: GitHub Issues
+- 📧 邮件: 项目维护者
 
 ---
 
-⭐ 如果这个项目对您有帮助，请给个 Star！ 
+⭐ 如果这个项目对您有帮助，请给个 Star！

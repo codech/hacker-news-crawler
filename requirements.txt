@@ -2,87 +2,115 @@
 # Hacker News 爬虫系统依赖包
 # ================================
 
+# ================================
 # 核心依赖 (Core Dependencies)
 # ================================
 
-# 网络请求库 - 用于爬取网页和API调用
-requests>=2.31.0
+# HTTP请求库 - 主要用于网页爬取
+requests>=2.25.0,<3.0.0
 
-# HTML解析库 - 用于解析HN网页内容
-beautifulsoup4>=4.12.0
+# 异步HTTP客户端 - 用于Telegram API（可选）
+# 注意：不同版本的httpx对代理支持不同，系统已做兼容处理
+httpx>=0.20.0
 
-# 数据处理库 - 用于CSV数据操作
-pandas>=2.0.0
+# HTML解析库
+beautifulsoup4>=4.9.0
 
-# 环境变量管理 - 用于配置文件加载
-python-dotenv>=1.0.0
+# 数据处理库
+pandas>=1.3.0
 
-# Telegram Bot库 - 用于消息推送
+# 环境变量管理
+python-dotenv>=0.19.0
+
+# Telegram Bot API
 python-telegram-bot>=20.0
 
-# 异步HTTP客户端 - 用于异步网络请求
-httpx>=0.24.0
+# 任务调度
+schedule>=1.1.0
 
-# 任务调度库 - 用于定时任务
-schedule>=1.2.0
-
+# ================================
 # 开发依赖 (Development Dependencies)
 # ================================
 
-# 代码格式化工具
-# black>=23.0.0
+# 代码格式化
+# black>=22.0.0
 
-# 代码检查工具
-# flake8>=6.0.0
+# 代码检查
+# flake8>=4.0.0
 
-# 类型检查工具
-# mypy>=1.0.0
+# 类型检查
+# mypy>=0.910
 
-# 测试框架
-# pytest>=7.0.0
-
+# ================================
 # 可选依赖 (Optional Dependencies)
 # ================================
 
-# 更好的JSON处理
-# ujson>=5.7.0
+# 如果需要更好的日志轮转支持
+# loguru>=0.6.0
 
-# 更快的CSV处理
-# pyarrow>=12.0.0
+# 如果需要更好的配置管理
+# pydantic>=1.8.0
 
-# 内存监控
-# psutil>=5.9.0
+# 如果需要数据库支持
+# sqlalchemy>=1.4.0
 
-# 配置验证
-# pydantic>=2.0.0
-
-# 日志增强
-# loguru>=0.7.0
+# 如果需要Redis缓存
+# redis>=4.0.0
 
 # ================================
-# 安装说明
+# 系统依赖说明 (System Requirements)
 # ================================
-# 
-# 基础安装：
-# pip install -r requirements.txt
-# 
-# 开发环境安装（包含开发工具）：
-# pip install -r requirements.txt black flake8 mypy pytest
-# 
-# 性能优化安装（包含可选依赖）：
-# pip install -r requirements.txt ujson pyarrow psutil
-# 
-# 完整安装：
-# pip install -r requirements.txt black flake8 mypy pytest ujson pyarrow psutil pydantic loguru
-# 
-# ================================
-# 版本兼容性
-# ================================
-# 
+
 # Python: 3.8+
 # 操作系统: Linux, macOS, Windows
-# 
-# 注意事项：
-# 1. 某些依赖可能需要编译，确保系统有相应的编译工具
-# 2. 在某些系统上可能需要额外安装系统依赖
-# 3. 建议使用虚拟环境安装依赖
+# 内存: 建议512MB+
+# 磁盘: 建议100MB+
+
+# ================================
+# 安装说明 (Installation Guide)
+# ================================
+
+# 1. 基础安装
+# pip install -r requirements.txt
+
+# 2. 开发环境安装
+# pip install -r requirements.txt
+# pip install black flake8 mypy
+
+# 3. 虚拟环境安装（推荐）
+# python -m venv venv
+# source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate     # Windows
+# pip install -r requirements.txt
+
+# ================================
+# 版本兼容性说明 (Compatibility Notes)
+# ================================
+
+# httpx版本说明：
+# - 0.20.0-0.23.x: 代理参数可能不兼容，系统会自动回退到requests
+# - 0.24.0+: 完全支持代理参数
+# - 系统已做兼容处理，无需担心版本问题
+
+# python-telegram-bot版本说明：
+# - 20.0+: 新版本API，推荐使用
+# - 13.x: 旧版本API，需要修改代码
+
+# pandas版本说明：
+# - 1.3.0+: 支持所有功能
+# - 1.0.0-1.2.x: 基本功能正常，部分新特性不可用
+
+# ================================
+# 故障排除 (Troubleshooting)
+# ================================
+
+# 如果遇到httpx代理问题：
+# 1. 系统会自动回退到requests
+# 2. 或者手动降级：pip install httpx==0.23.3
+
+# 如果遇到pandas版本问题：
+# pip install pandas==1.5.3
+
+# 如果遇到SSL证书问题：
+# pip install certifi
+# 或在macOS上：/Applications/Python\ 3.x/Install\ Certificates.command

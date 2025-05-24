@@ -536,34 +536,51 @@ class HackerNewsCrawler:
         return summary if summary else "暂无内容摘要"
     
     async def send_telegram_message(self, message, max_retries=None):
-        """发送Telegram消息"""
+        """发送Telegram消息，兼容不同版本的httpx"""
         if max_retries is None:
             max_retries = self.message_max_retries
             
+        # 优先使用requests方式，更稳定
         for attempt in range(max_retries + 1):
             try:
-                async with httpx.AsyncClient(
+                import requests
+                url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
+                data = {
+                    'chat_id': self.chat_id,
+                    'text': message,
+                    'parse_mode': 'HTML',
+                    'disable_web_page_preview': False
+                }
+                
+                response = requests.post(
+                    url,
+                    data=data,
                     proxies=self.proxies,
                     timeout=self.telegram_timeout
-                ) as client:
-                    url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
-                    data = {
-                        'chat_id': self.chat_id,
-                        'text': message,
-                        'parse_mode': 'HTML',
-                        'disable_web_page_preview': False
-                    }
-                    
-                    response = await client.post(url, data=data)
-                    response.raise_for_status()
-                    
-                    await asyncio.sleep(self.message_send_interval)
-                    return True
-                    
-            except httpx.TimeoutException:
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    if result.get('ok'):
+                        await asyncio.sleep(self.message_send_interval)
+                        return True
+                    else:
+                        logging.error(f"Telegram API错误: {result.get('description', '未知错误')}")
+                        if attempt < max_retries:
+                            await asyncio.sleep(self.message_retry_interval)
+                        else:
+                            return False
+                else:
+                    logging.error(f"HTTP错误: {response.status_code}")
+                    if attempt < max_retries:
+                        await asyncio.sleep(self.message_retry_interval)
+                    else:
+                        return False
+                        
+            except requests.exceptions.Timeout:
                 logging.warning(f"⏰ 发送超时 (尝试 {attempt + 1}/{max_retries + 1})")
                 if attempt < max_retries:
-                    await asyncio.sleep(self.message_retry_interval)  # 超时后等待更长时间
+                    await asyncio.sleep(self.message_retry_interval)
                     
             except Exception as e:
                 logging.error(f"❌ 发送失败 (尝试 {attempt + 1}/{max_retries + 1}): {e}")
@@ -812,61 +829,26 @@ class HackerNewsCrawler:
             else:
                 logging.warning(f"⚠️ HN网站连接异常: HTTP {response.status_code}")
             
-            # 测试Telegram API连接
-            if self.proxies:
-                import httpx
-                proxy_url = self.proxies.get('https', self.proxies.get('http'))
+            # 测试Telegram API连接 - 统一使用requests
+            try:
+                telegram_response = requests.get(
+                    f"https://api.telegram.org/bot{self.bot_token}/getMe",
+                    proxies=self.proxies,
+                    timeout=self.connection_test_timeout
+                )
                 
-                async def test_telegram():
-                    try:
-                        async with httpx.AsyncClient(proxies=proxy_url, timeout=self.connection_test_timeout) as client:
-                            response = await client.get(f"https://api.telegram.org/bot{self.bot_token}/getMe")
-                            if response.status_code == 200:
-                                result = response.json()
-                                if result.get('ok'):
-                                    logging.info("✅ Telegram API 连接正常")
-                                    return True
-                        return False
-                    except Exception as e:
-                        logging.warning(f"⚠️ Telegram API 连接失败: {e}")
-                        return False
+                if telegram_response.status_code == 200:
+                    result = telegram_response.json()
+                    if result.get('ok'):
+                        bot_info = result.get('result', {})
+                        logging.info(f"✅ Telegram API连接正常 - Bot: {bot_info.get('username', 'Unknown')}")
+                        return True
                 
-                # 运行异步测试
-                try:
-                    loop = asyncio.get_event_loop()
-                    if loop.is_running():
-                        # 如果已经在事件循环中，创建新的任务
-                        import concurrent.futures
-                        with concurrent.futures.ThreadPoolExecutor() as executor:
-                            future = executor.submit(asyncio.run, test_telegram())
-                            return future.result()
-                    else:
-                        return asyncio.run(test_telegram())
-                except Exception as e:
-                    logging.error(f"❌ 异步测试失败: {e}")
-                    return False
-            else:
-                # 直连模式测试 - 使用同步方式
-                try:
-                    # 简单测试Telegram API（使用requests）
-                    telegram_response = requests.get(
-                        f"https://api.telegram.org/bot{self.bot_token}/getMe",
-                        proxies=self.proxies,
-                        timeout=self.connection_test_timeout
-                    )
-                    
-                    if telegram_response.status_code == 200:
-                        result = telegram_response.json()
-                        if result.get('ok'):
-                            bot_info = result.get('result', {})
-                            logging.info(f"✅ Telegram API连接正常 - Bot: {bot_info.get('username', 'Unknown')}")
-                            return True
-                    
-                    logging.warning(f"⚠️ Telegram API连接异常: {telegram_response.status_code}")
-                    return False
-                except Exception as e:
-                    logging.error(f"❌ Telegram API连接失败: {e}")
-                    return False
+                logging.warning(f"⚠️ Telegram API连接异常: {telegram_response.status_code}")
+                return False
+            except Exception as e:
+                logging.error(f"❌ Telegram API连接失败: {e}")
+                return False
                     
         except Exception as e:
             logging.error(f"❌ 网络连接测试失败: {e}")
