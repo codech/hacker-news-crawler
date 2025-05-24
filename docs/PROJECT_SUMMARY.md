@@ -151,7 +151,7 @@ hacker-news-crawler/
 ### 开发环境
 ```bash
 # 快速启动
-git clone <repository>
+git clone https://github.com/codech/hacker-news-crawler.git
 cd hacker-news-crawler
 pip install -r requirements.txt
 cp config.env.example config.env
@@ -252,9 +252,7 @@ chore: 构建过程或辅助工具的变动
 - **讨论**: 参与社区讨论和交流
 
 ### 联系方式
-- **Email**: project@example.com
-- **Telegram**: @project_support
-- **GitHub**: https://github.com/project/issues
+- **GitHub**: https://github.com/codech/hacker-news-crawler/issues
 
 ## 📄 许可证
 
