@@ -67,7 +67,7 @@
 
 1. **克隆项目**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/codech/hacker-news-crawler.git
    cd hacker-news-crawler
    ```
 
@@ -450,7 +450,7 @@ def custom_format_message(self, news):
 ## 📞 支持
 
 如有问题，请通过以下方式联系：
-- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/codech/hacker-news-crawler/issues)
 
 ---
 
